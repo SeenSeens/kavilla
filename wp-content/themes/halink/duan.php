@@ -66,13 +66,10 @@ $all_categories = get_categories($args);
 						'post_status' => 'publish',
 						'orderby' => 'ID',
 						'order' => 'DESC',
-						'cat' => $id,
-						'posts_per_page'    =>  4
+						'cat' => $id
 					)); ?>
 						<ul class="ga" style="margin: 0;padding: 0;list-style: none;">
-						<?php if ($service->have_posts()) :  while ($service->have_posts()) : $service->the_post();
-							$max_post_count = $service->post_count;
-						?>
+						<?php if ($service->have_posts()) :  while ($service->have_posts()) : $service->the_post(); ?>
 							<li class="col-md-4 col-sm-6 col-xs-12 giat" style="position: relative;">
 								<div class="row">
 									<div class="detail">
@@ -93,50 +90,10 @@ $all_categories = get_categories($args);
 									<a class="an" style="display: block;width: 100%;height: 100%;position: absolute;top: 0;z-index: 999;" href="<?php the_permalink(); ?>"></a>    
 								</div>
 							</li>
-							<?php if($stt == 1 || $stt == $max_post_count):?></div><?php endif;?>
-							<?php $stt++; endwhile;?>
-							<?php devvn_corenavi_ajax($service);?>
+							<?php endwhile;?>
 							<li class="col-md-4 col-sm-6 col-xs-12 xem">
 								<div>
-								<?php
-$news = new WP_Query(array(
-    'post_type'         =>  'post',
-    'posts_per_page'    =>  4
-));
-if($news->have_posts()):
-    $max_post_count = $news->post_count;
-    ?>
-    <div class="home_tintuc">
-    <div class="container">
-        <div class="home_news_main">
-            <div class="home_news_wrap">	
-                <?php $stt = 1; while ($news->have_posts()):$news->the_post();?>
-            <?php if($stt == 1):?><div class="home_news_col1"><?php endif;?>
-                    <?php if($stt == 2):?><div class="home_news_col2"><?php endif;?>
-                        <?php
-                        $thumb = wp_get_attachment_image_src( get_post_thumbnail_id($post->ID), 'thumbnail' );
-                        $urlThumb = $thumb['0'];
-                        ?>
-                        <div class="tintuc_box <?php if(has_post_thumbnail()):?>has_post_thumbnail<?php endif;?>">
-                            <?php if(has_post_thumbnail()):?>
-                                <div class="tintuc_box_thumb"><a href="<?php the_permalink();?>" title="<?php the_title()?>" style="background: url(<?php echo $urlThumb;?>) no-repeat center center"><?php the_post_thumbnail('thumbnail');?></a></div>
-                            <?php endif;?>
-                            <div class="tintuc_box_infor">
-                                <h3><a href="<?php the_permalink();?>" title="<?php the_title()?>"><?php the_title();?></a></h3>
-                                <div class="news_infor_cat"><?php the_category(', ');?></div>
-                                <div class="news_date"><?php echo get_the_date();?></div>
-                                <div class="news_excerpt"><?php the_excerpt();?></div>
-                                <a href="<?php echo get_the_permalink();?>" title="<?php the_title();?>" rel="nofollow" class="news_readmore"><?php _e('Xem thêm >>','devvn')?></a>
-                            </div>
-                        </div>
-                        <?php if($stt == 1 || $stt == $max_post_count):?></div><?php endif;?>
-                    <?php $stt++; endwhile;?>
-                </div>
-                <?php devvn_corenavi_ajax($news);?>
-            </div>
-        </div>
-    </div>
-<?php endif; wp_reset_query();//End news?>
+									<?php  ?>
 								</div>
 							</li>					
 							<?php endif; ?>
