@@ -1,7 +1,9 @@
-<div class="container-fluid">
+<div class="container-fluid" style="overflow: hidden;">
 	<div class="container">
 		<div class="row">    
-			<div class="col-xs-12 ft">Kavila design & construction co ., ltd - www.kavila.vn </div>
+		<footer class="footer">
+			<?php if(is_active_sidebar('footer')) { dynamic_sidebar( 'footer' ); } ?>
+		</footer>
 		</div>
 	</div>
 </div>

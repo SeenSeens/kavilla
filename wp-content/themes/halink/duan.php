@@ -1,11 +1,6 @@
 <?php
-/**
- * Template Name: Dự án
- */
-get_header(); ?>
-<?php
-//$categories   = get_queried_object_id();
-//echo '<pre>'; var_dump($categories); die;
+get_header();
+$categories   = get_queried_object_id();
 $taxonomy     = 'category';
 $orderby      = 'name';
 $show_count   = 0;
@@ -22,7 +17,7 @@ $args = array(
 	'hierarchical' => $hierarchical,
 	'title_li'     => $title,
 	'hide_empty'   => $empty,
-	'parent'       => '3',
+	'parent'       => $parent,
 );
 $all_categories = get_categories($args);
 ?>
@@ -45,14 +40,11 @@ $all_categories = get_categories($args);
 				document.getElementById('get_page'+cat).innerHTML=xmlhttp.responseText;
 			}
 		}
-		xmlhttp.open("GET.html","../../ajaxpagea54e.html?page=" + page +"&cat="+cat,true);
+		xmlhttp.open("duan.php","../../ajaxpagea54e.html?page=" + page +"&cat="+cat,true);
 		xmlhttp.send();
 	}
 </script>
-<h1 class="hidden">Dự án Kavila</h1>
-<h3 class="hidden">Kiến trúc Kavila</h3>
-<h2 class="hidden">Kiến trúc Kavila</h2>
-<div class="container-fluid" style="min-height: 550px;">
+<div class="container-fluid">
 	<div class="container">
 		<div class="row">
 			<div style="background: #121212;margin-bottom: 5px;">
@@ -62,35 +54,38 @@ $all_categories = get_categories($args);
 					<?php endforeach; wp_reset_query(); endif; ?> 
 				</ul>
 				<div class="clear"></div>
-			</div>
+			</div>	
 			<div>
 			<?php if($all_categories) : foreach($all_categories as $cat) : ?>
 				<div class="block-detail-1" id="<?= $cat->term_id; ?>">
 					<div id="get_page<?= $cat->term_id; ?>">
 					<?php 
 					$id = $cat->term_id;
-					//echo '<pre>'; print_r($id); die;
 					$service = new WP_Query(array(
 						'post_type' =>  'post',
 						'post_status' => 'publish',
 						'orderby' => 'ID',
 						'order' => 'DESC',
-						'cat' => $id
+						'cat' => $id,
+						'posts_per_page'    =>  4
 					)); ?>
 						<ul class="ga" style="margin: 0;padding: 0;list-style: none;">
-						<?php if ($service->have_posts()) :  while ($service->have_posts()) : $service->the_post(); ?>
+						<?php if ($service->have_posts()) :  while ($service->have_posts()) : $service->the_post();
+							$max_post_count = $service->post_count;
+						?>
 							<li class="col-md-4 col-sm-6 col-xs-12 giat" style="position: relative;">
 								<div class="row">
 									<div class="detail">
 										<a href="<?php the_permalink(); ?>">
 										<?php
 										the_post_thumbnail('post_thumbnail', [
-											'class' => 'img-responsive'
+											'class' => 'img-responsive',
+											'style' => 'max-height: 366px'
 										])
 										?>
 										</a>
 									</div> <!-- end detail -->                       
-									<div class="tooltip-detail" style="position: absolute;bottom: -101%;z-index: 99;">		
+									<div class="tooltip-detail" style="position: absolute;">		
 										<a href="<?php the_permalink(); ?>"><h2 class="product_title"><?php the_title(); ?></h2></a>
 										<div class="thanhngang"></div>
 										<p class="intro"></p>
@@ -98,14 +93,56 @@ $all_categories = get_categories($args);
 									<a class="an" style="display: block;width: 100%;height: 100%;position: absolute;top: 0;z-index: 999;" href="<?php the_permalink(); ?>"></a>    
 								</div>
 							</li>
-							<?php endwhile; wp_reset_query();
-								else : get_template_part('template-parts/content', 'none');
-								endif;
-							?>
+							<?php if($stt == 1 || $stt == $max_post_count):?></div><?php endif;?>
+							<?php $stt++; endwhile;?>
+							<?php devvn_corenavi_ajax($service);?>
 							<li class="col-md-4 col-sm-6 col-xs-12 xem">
-								<div><a href="javascript:;" onclick="loadSubMenu1(2,2)" class="next_xem">XEM THÊM...</a></div>
-							</li>
+								<div>
+								<?php
+$news = new WP_Query(array(
+    'post_type'         =>  'post',
+    'posts_per_page'    =>  4
+));
+if($news->have_posts()):
+    $max_post_count = $news->post_count;
+    ?>
+    <div class="home_tintuc">
+    <div class="container">
+        <div class="home_news_main">
+            <div class="home_news_wrap">	
+                <?php $stt = 1; while ($news->have_posts()):$news->the_post();?>
+            <?php if($stt == 1):?><div class="home_news_col1"><?php endif;?>
+                    <?php if($stt == 2):?><div class="home_news_col2"><?php endif;?>
+                        <?php
+                        $thumb = wp_get_attachment_image_src( get_post_thumbnail_id($post->ID), 'thumbnail' );
+                        $urlThumb = $thumb['0'];
+                        ?>
+                        <div class="tintuc_box <?php if(has_post_thumbnail()):?>has_post_thumbnail<?php endif;?>">
+                            <?php if(has_post_thumbnail()):?>
+                                <div class="tintuc_box_thumb"><a href="<?php the_permalink();?>" title="<?php the_title()?>" style="background: url(<?php echo $urlThumb;?>) no-repeat center center"><?php the_post_thumbnail('thumbnail');?></a></div>
+                            <?php endif;?>
+                            <div class="tintuc_box_infor">
+                                <h3><a href="<?php the_permalink();?>" title="<?php the_title()?>"><?php the_title();?></a></h3>
+                                <div class="news_infor_cat"><?php the_category(', ');?></div>
+                                <div class="news_date"><?php echo get_the_date();?></div>
+                                <div class="news_excerpt"><?php the_excerpt();?></div>
+                                <a href="<?php echo get_the_permalink();?>" title="<?php the_title();?>" rel="nofollow" class="news_readmore"><?php _e('Xem thêm >>','devvn')?></a>
+                            </div>
+                        </div>
+                        <?php if($stt == 1 || $stt == $max_post_count):?></div><?php endif;?>
+                    <?php $stt++; endwhile;?>
+                </div>
+                <?php devvn_corenavi_ajax($news);?>
+            </div>
+        </div>
+    </div>
+<?php endif; wp_reset_query();//End news?>
+								</div>
+							</li>					
+							<?php endif; ?>
+							
 						</ul>
+						<div class="clear"></div>
 					</div> <!-- end content-detail -->
 				</div>
 				<?php endforeach; wp_reset_query(); endif; ?> 

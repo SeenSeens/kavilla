@@ -50,15 +50,19 @@
         </div>
         <div class="col-md-8 col-md-push-1 col-sm-9 col-sm-push-1 hidden-xs">
             <div class="row">
+            <nav class="navbar navbar-inverse navbar-fix">
 				<?php
 				wp_nav_menu(
 					array(
 						'theme_location' => 'menu-1',
 						'container' => 'false',
-						'menu_class' => 'menutop',
+                        'menu_class' => 'menutop nav navbar-nav',
+                        'fallback_cb'	=> 'WP_Bootstrap_Navwalker::fallback',
+                        'walker'	=> new WP_Bootstrap_Navwalker(),
 					)
 				);
-				?>
+                ?>
+            </nav>
             </div>
         </div>
         <div class="language">

@@ -42,6 +42,14 @@ if ( ! function_exists( 'halink_setup' ) ) :
 		 */
 		add_theme_support( 'post-thumbnails' );
 
+		if ( ! file_exists( get_template_directory() . '/class-wp-bootstrap-navwalker.php' ) ) {
+			// file does not exist... return an error.
+			return new WP_Error( 'class-wp-bootstrap-navwalker-missing', __( 'It appears the class-wp-bootstrap-navwalker.php file may be missing.', 'wp-bootstrap-navwalker' ) );
+		} else {
+			// file exists... require it.
+			require_once get_template_directory() . '/class-wp-bootstrap-navwalker.php';
+		}
+
 		// This theme uses wp_nav_menu() in one location.
 		register_nav_menus( array(
 			'menu-1' => esc_html__( 'Primary', 'halink' ),
@@ -113,6 +121,22 @@ function halink_widgets_init() {
 		'before_title'  => '<h2 class="widget-title">',
 		'after_title'   => '</h2>',
 	) );
+	register_sidebar(
+		array(
+			'name'	=> __('Liên hệ', 'halink'),
+			'id'	=> 'contact',
+			'description'	=> __('Đây là trang liên hệ', 'halink'),
+			'before_widget'	=> '<div class="%1$s">',
+			'after_widget'	=> '</div>',
+		)
+	);
+	register_sidebar(
+		array(
+			'name'	=> __('Chân trang', 'halink'),
+			'id'	=> 'footer',
+			'description'	=> __('Đây là chân trang', 'halink'),
+		)
+	);
 }
 add_action( 'widgets_init', 'halink_widgets_init' );
 
@@ -464,29 +488,99 @@ if ( defined( 'JETPACK__VERSION' ) ) {
 	require get_template_directory() . '/inc/jetpack.php';
 }
 
-function the_breadcrumb() {
-	echo '<ul id="crumbs">';
-	if (!is_home()) {
-		echo '<a href="';
-		//echo get_option('home');
-		echo '">';
-		echo '<img src="https://img.icons8.com/small/32/000000/home-page.png">&nbsp;Home';
-		echo "</a> / ";
-		if (is_category() || is_single()) {
-				the_category(' / ');
-				if (is_single()) {
-						the_title(' / ');
-				}
-		} elseif (is_page()) {
-				echo the_title(' / ');
-		}
+/**
+ * Widget
+ */
+require_once get_parent_theme_file_path( '/widget/widget-contact.php' );
+require_once get_parent_theme_file_path( '/widget/widget-footer.php' );
+if(!function_exists('contact_widget')) {
+	function contact_widget() {
+		register_widget( 'Widget_Contact' );
+		register_widget( 'Widget_Footer' );
 	}
-	elseif (is_tag()) {single_tag_title();}
-	elseif (is_day()) {echo"<li>Archive for "; the_time('F jS, Y'); echo'</li>';}
-	elseif (is_month()) {echo"<li>Archive for "; the_time('F, Y'); echo'</li>';}
-	elseif (is_year()) {echo"<li>Archive for "; the_time('Y'); echo'</li>';}
-	elseif (is_author()) {echo"<li>Author Archive"; echo'</li>';}
-	elseif (isset($_GET['paged']) && !empty($_GET['paged'])) {echo "<li>Blog Archives"; echo'</li>';}
-	elseif (is_search()) {echo"<li>Search Results"; echo'</li>';}
-	echo '</ul>';
+	add_action('widgets_init', 'contact_widget');
+}
+
+/**
+ * Thêm class cho thẻ a phân trang
+ */
+add_filter('next_posts_link_attributes', 'posts_link_attributes');
+add_filter('previous_posts_link_attributes', 'posts_link_attributes');
+function posts_link_attributes() {
+    return 'class="next_xem"';
+}
+
+function devvn_corenavi_ajax($custom_query = null, $paged = 1) {
+    global $wp_query, $wp_rewrite;
+    if($custom_query) $main_query = $custom_query;
+    else $main_query = $wp_query;
+    $big = 999999999;
+    $total = isset($main_query->max_num_pages)?$main_query->max_num_pages:'';
+    if($total > 1) echo '<div class="paginate_links">';
+    echo paginate_links( array(
+        'base'        => trailingslashit( home_url() ) . "{$wp_rewrite->pagination_base}/%#%/",
+        'format'   => '?paged=%#%',
+        'current'  => max( 1, $paged ),
+        'total'    => $total,
+        'mid_size' => '5',
+        'prev_text'    => __('<<','devvn'),
+        'next_text'    => __('>>','devvn'),
+    ) );
+    if($total > 1) echo '</div>';
+}
+
+//Ajax load post
+add_action( 'wp_ajax_ajax_load_post', 'ajax_load_post_func' );
+add_action( 'wp_ajax_nopriv_ajax_load_post', 'ajax_load_post_func' );
+function ajax_load_post_func() {
+    if ( !wp_verify_nonce( $_REQUEST['nonce'], "ajax_load_post_nonce")) {
+        wp_send_json_error('None?');
+	}
+	$paged = isset($_POST['ajax_paged'])?intval($_POST['ajax_paged']):'';
+	if($paged <= 0 || !$paged || !is_numeric($paged)) wp_send_json_error('Paged?');
+	$service = new WP_Query(array(
+		'post_type' =>  'post',
+		'paged'             =>  $paged,
+		'posts_per_page'    =>  4
+	));
+	if ($service->have_posts()) :
+		ob_start();
+		$max_post_count = $service->post_count;
+	?>
+	<ul class="ga" style="margin: 0;padding: 0;list-style: none;">
+		<li class="col-md-4 col-sm-6 col-xs-12 giat" style="position: relative;">
+			<div class="row">
+				<div class="detail">
+					<a href="<?php the_permalink(); ?>">
+					<?php
+					the_post_thumbnail('post_thumbnail', [
+						'class' => 'img-responsive',
+						'style' => 'max-height: 366px'
+					])
+					?>
+					</a>
+				</div> <!-- end detail -->                       
+				<div class="tooltip-detail" style="position: absolute;">		
+					<a href="<?php the_permalink(); ?>"><h2 class="product_title"><?php the_title(); ?></h2></a>
+					<div class="thanhngang"></div>
+					<p class="intro"></p>
+				</div> <!-- end tooltip-detail -->    
+				<a class="an" style="display: block;width: 100%;height: 100%;position: absolute;top: 0;z-index: 999;" href="<?php the_permalink(); ?>"></a>    
+			</div>
+		</li>
+	</ul>
+	<?php endif; ?>
+		<?php
+    	wp_send_json_success($content);
+    	die();
+}
+
+add_action( 'wp_enqueue_scripts', 'devvn_enqueue_UseAjaxInWp' );
+function devvn_enqueue_UseAjaxInWp(){
+    wp_enqueue_script( 'devvn-ajaxload', esc_url( trailingslashit( get_template_directory_uri() ) . 'js/ajax-loadpost.js' ), array( 'jquery' ), '1.0', true );
+    $php_array = array(
+        'admin_ajax'      => admin_url( 'admin-ajax.php'),
+        'load_post_nonce'   =>  wp_create_nonce('ajax_load_post_nonce'),
+    );
+    wp_localize_script( 'devvn-ajaxload', 'devvn_array', $php_array );
 }

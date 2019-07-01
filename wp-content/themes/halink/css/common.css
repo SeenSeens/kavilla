@@ -220,7 +220,7 @@ ul.menutop>li+li {
 }
 
 .block-detail-1 {
-    display: none;
+    display: block;
 }
 
 .block-detail-2 {
@@ -240,7 +240,7 @@ ul.menutop>li+li {
 
 .tab-title li a {
     display: block;
-    padding: 10px 30px;
+    padding: 10px 25px;
     color: #777;
     font-size: 15px;
     position: relative;
@@ -310,12 +310,13 @@ ul.menutop>li+li {
 
 .tooltip-detail {
     width: 100%;
-    height: 101%;
+    height: 25%;
     z-index: 99999;
     text-align: center;
     background: rgba(0, 0, 0, 0.6);
     visibility: hidden !important;
     padding: 10px;
+    margin-top: -27%;
 }
 
 .tooltip-detail:hover {
@@ -740,16 +741,16 @@ a.cong:hover .cc1 {
         background: #dedede;
     }
     .tooltip-detail {
-        top: 0 !important;
         bottom: 0 !important;
         visibility: visible !important;
         padding: 20px;
+        height: 101%;
     }
     .tooltip-detail:hover {
-        display: block;
+        display: none;
     }
     .ga li:hover .tooltip-detail {
-        background: rgba(0, 0, 0, 0.7) !important;
+        background: rgba(0, 0, 0, 0.1) !important;
     }
     .ga li img {
         filter: none !important;

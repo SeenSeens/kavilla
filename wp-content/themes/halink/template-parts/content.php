@@ -2,11 +2,11 @@
 	<div style="background: #121212;margin-bottom: 5px;line-height: 40px;" class="hihihehe">
 		<!-- <a href="../../du-an/1/index.html"></a>&nbsp; / &nbsp;<span><a href="../../du-an/2/index.html"><?php //$id; ?></a></span>&nbsp; / &nbsp;<span><?php //the_title(); ?></span> -->
 		<?php
-		// if ( function_exists('yoast_breadcrumb') ) {
-		// 	yoast_breadcrumb( '<p id="breadcrumbs">','</p>' );
-		// }
+		if ( function_exists('yoast_breadcrumb') ) {
+			yoast_breadcrumb( '<p id="breadcrumbs">','</p>' );
+		}
 		?>
-		<?php the_breadcrumb(); ?>
+		<?php //the_breadcrumb(); ?>
 	</div>
 	<div>
 		<h1 class="hidden">NGUYỄN HOÀI NAM</h1>
@@ -42,21 +42,6 @@
 					}
 					echo $r;
 					?>
-					<div>
-						<div>
-							<img src="<?php bloginfo('template_directory'); ?>/uploads/albumsp/tmp_1557139238.jpg" alt="NGUYỄN HOÀI NAM" style="display: block;width:100%;height:auto;" />
-						</div>
-						<div class="cc">
-							<div class="noidung" style="padding: 10px 0 10px 0;">
-								<div>
-									<p>Chủ đầu tư: Nguyễn Ho&agrave;i Nam</p>
-									<p>Địa chỉ: P H&ograve;a Xu&acirc;n, tp Đ&agrave; Nẵng</p>
-									<p>Diện t&iacute;ch: 20 x 25</p>
-									<p>Hướng: T&acirc;y Bắc</p>
-								</div>
-							</div>
-						</div>
-					</div>
 				</div>
 				<a href="#" class="slider-nav prev spkmsliderNext"><img src="<?php bloginfo('template_directory'); ?>/images/r.png" /></a>
 				<a href="#" class="slider-nav next spkmsliderPrev"><img src="<?php bloginfo('template_directory'); ?>/images/l.png" /></a>
@@ -88,7 +73,7 @@
 						<p><?php the_field('chu_dau_tu'); ?></p>
 						<p><?php the_field('dia_chi'); ?></p>
 						<p><?php the_field('dien_tich'); ?></p>
-							<p><?php the_field('huong'); ?></p>
+						<p><?php the_field('huong'); ?></p>
 					</div>
 				</div>
 			</div>
