@@ -100,8 +100,8 @@ $all_categories = get_categories($args);
 							</li>
 							<?php endwhile; wp_reset_query();
 								else : get_template_part('template-parts/content', 'none');
-                                endif;
-                                ?>
+								endif;
+							?>
 							<li class="col-md-4 col-sm-6 col-xs-12 xem">
 								<div><a href="javascript:;" onclick="loadSubMenu1(2,2)" class="next_xem">XEM THÊM...</a></div>
 							</li>
